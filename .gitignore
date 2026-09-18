@@ -1,1 +1,6 @@
--e "__pycache__/\n*.pyc\nvenv/\ninstance/\n.env" 
+__pycache__/
+*.pyc
+venv/
+instance/
+*.db
+.env

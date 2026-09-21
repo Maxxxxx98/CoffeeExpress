@@ -2,12 +2,17 @@ import os
 import sqlite3
 from typing import List, Tuple
 
+# Configuration paths for database storage
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_DIR = os.path.join(BASE_DIR, 'instance')
 DB_PATH = os.path.join(DB_DIR, 'coffee.db')
 
 def get_db_connection() -> sqlite3.Connection:
-    """Create and return a configured SQLite connection."""
+    """
+    Establish and configure a local SQLite database connection.
+    Enforces foreign key constraints and column-name row mapping.
+    """
+    # Create instance directory if it does not exist yet
     os.makedirs(DB_DIR, exist_ok=True)
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
@@ -15,11 +20,14 @@ def get_db_connection() -> sqlite3.Connection:
     return conn
 
 def init_db() -> None:
-    """Initialize schema tables and populate default menu items."""
+    """
+    Execute DDL schema creation and populate default menu items.
+    Uses context manager to guarantee automatic transaction commit.
+    """
     with get_db_connection() as conn:
         cursor = conn.cursor()
 
-        # Product catalog table
+        # Product catalog table with price constraint
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS products (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -31,7 +39,7 @@ def init_db() -> None:
             )
         ''')
 
-        # Customer orders table
+        # Orders audit log with status and positive amount constraint
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS orders (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -45,7 +53,7 @@ def init_db() -> None:
             )
         ''')
 
-        # Seed initial menu records if empty
+        # Populate initial catalog items if table is freshly created
         cursor.execute('SELECT COUNT(*) FROM products')
         count = cursor.fetchone()[0]
 
@@ -55,8 +63,10 @@ def init_db() -> None:
                 ('Капучино', 'Кава', 65.0, 'Збалансований напій на основі еспресо та збитого молока.', '/static/images/cappuccino.jpg'),
                 ('Лате', 'Кава', 70.0, 'Ніжна кава з великою кількістю шовковистого молока.', '/static/images/latte.jpg'),
                 ('Флет Вайт', 'Кава', 75.0, 'Подвійний еспресо з оксамитовою текстурою молока.', '/static/images/flatwhite.jpg'),
+                ('Айс Лате', 'Кава', 75.0, 'Освіжаючий холодний еспресо з молоком та кубиками льоду.', '/static/images/icelatte.jpg'),
                 ('Круасан класичний', 'Десерти', 55.0, 'Свіжа випічка з листкового тіста на натуральному маслі.', '/static/images/croissant.jpg'),
-                ('Чизкейк Нью-Йорк', 'Десерти', 85.0, 'Ніжний запечений сирний десерт на пісочній основі.', '/static/images/cheesecake.jpg')
+                ('Чизкейк Нью-Йорк', 'Десерти', 85.0, 'Ніжний запечений сирний десерт на пісочній основі.', '/static/images/cheesecake.jpg'),
+                ('Макаронс асорті', 'Десерти', 65.0, 'Набір витончених французьких тістечок з різними смаками.', '/static/images/macarons.jpg')
             ]
             cursor.executemany('''
                 INSERT INTO products (name, category, price, description, image_url)

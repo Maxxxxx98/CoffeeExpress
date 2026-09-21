@@ -1,0 +1,180 @@
+/**
+ * CoffeeExpress Main Stylesheet
+ * Responsive UI styling based on warm coffee tones, custom options & smooth transitions.
+ */
+
+:root {
+    --primary-coffee: #4a2c2a;
+    --accent-caramel: #c88a58;
+    --light-cream: #fbf8f5;
+    --dark-espresso: #251614;
+    --border-soft: #e8ded4;
+    --text-muted-coffee: #6e645f;
+    --card-shadow-hover: rgba(74, 44, 42, 0.14);
+}
+
+body {
+    background-color: var(--light-cream);
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+    color: var(--dark-espresso);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.navbar-brand-custom {
+    font-weight: 700;
+    font-size: 1.45rem;
+    color: var(--primary-coffee) !important;
+    letter-spacing: -0.5px;
+}
+
+/* Badge Bounce Animation */
+@keyframes pulseBadge {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.35); }
+    100% { transform: scale(1); }
+}
+
+.badge-bounce {
+    animation: pulseBadge 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.cart-count-badge {
+    background-color: var(--accent-caramel);
+    font-size: 0.85rem;
+    vertical-align: top;
+    transition: transform 0.2s ease;
+}
+
+.hero-banner {
+    background: linear-gradient(135deg, var(--dark-espresso), var(--primary-coffee));
+    color: #ffffff;
+    padding: 3rem 1.5rem;
+    border-radius: 1.25rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 10px 30px rgba(37, 22, 20, 0.18);
+}
+
+.category-filter-btn {
+    border-radius: 2rem;
+    padding: 0.5rem 1.6rem;
+    font-weight: 600;
+    transition: all 0.25s ease-in-out;
+    border: 1px solid var(--border-soft);
+    background-color: #ffffff;
+    color: var(--primary-coffee);
+}
+
+.category-filter-btn:hover,
+.category-filter-btn.active {
+    background-color: var(--accent-caramel);
+    border-color: var(--accent-caramel);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(200, 138, 88, 0.25);
+}
+
+/* Product Card */
+.product-card {
+    background: #ffffff;
+    border: 1px solid var(--border-soft);
+    border-radius: 1.1rem;
+    overflow: hidden;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.product-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 14px 30px var(--card-shadow-hover);
+}
+
+.product-image-wrapper {
+    height: 220px;
+    background: #f2e9e1;
+    position: relative;
+    overflow: hidden;
+}
+
+.product-image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.35s ease;
+}
+
+.product-card:hover .product-image-wrapper img {
+    transform: scale(1.05);
+}
+
+.product-price-tag {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    background: var(--dark-espresso);
+    color: #ffffff;
+    padding: 0.35rem 0.85rem;
+    border-radius: 2rem;
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+
+.btn-primary-coffee {
+    background-color: var(--primary-coffee);
+    border-color: var(--primary-coffee);
+    color: #ffffff;
+    font-weight: 600;
+    border-radius: 0.7rem;
+    transition: all 0.2s ease;
+}
+
+.btn-primary-coffee:hover {
+    background-color: var(--dark-espresso);
+    border-color: var(--dark-espresso);
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+/* Custom Selection Option Chips (Milk & Syrup) */
+.custom-chip-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.custom-chip-group input[type="radio"] {
+    display: none;
+}
+
+.custom-chip-group label {
+    border: 1px solid var(--border-soft);
+    padding: 0.45rem 0.9rem;
+    border-radius: 2rem;
+    cursor: pointer;
+    font-size: 0.88rem;
+    background: #ffffff;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.custom-chip-group input[type="radio"]:checked + label {
+    background-color: var(--primary-coffee);
+    border-color: var(--primary-coffee);
+    color: #ffffff;
+    box-shadow: 0 3px 8px rgba(74, 44, 42, 0.2);
+}
+
+.modal-content {
+    border-radius: 1.25rem;
+    border: none;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+}
+
+.order-success-banner {
+    border: 2px dashed #198754;
+    background: #f4faf6;
+    border-radius: 1rem;
+    padding: 2rem 1.5rem;
+}

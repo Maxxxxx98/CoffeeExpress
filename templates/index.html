@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CoffeeExpress — Сервіс швидкого замовлення кави</title>
+
+    <!-- Bootstrap 5 CSS & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Custom Project Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <!-- Main Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top py-3">
+        <div class="container">
+            <a class="navbar-brand navbar-brand-custom d-flex align-items-center gap-2" href="/">
+                <i class="bi bi-cup-hot-fill text-danger fs-3"></i>
+                <span>CoffeeExpress</span>
+            </a>
+
+            <div class="d-flex align-items-center gap-2">
+                <a href="/admin" class="btn btn-outline-secondary btn-sm me-2">
+                    <i class="bi bi-shield-lock me-1"></i> Панель баристи
+                </a>
+                <button class="btn btn-primary-coffee position-relative" data-bs-toggle="modal" data-bs-target="#cartModal" aria-label="Відкрити кошик">
+                    <i class="bi bi-bag-check me-1"></i> Кошик
+                    <span id="cartCountBadge" class="badge rounded-pill cart-count-badge ms-1">0</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Storefront View -->
+    <main class="container my-4 flex-grow-1">
+        <!-- Hero Promotional Banner -->
+        <header class="hero-banner text-center">
+            <h1 class="display-6">Свіжа кава та випічка без черг</h1>
+            <p class="lead mb-0 text-light opacity-75">Оберіть улюблені напої, налаштуйте додатки та заберіть готове замовлення за 1 хвилину.</p>
+        </header>
+
+        <!-- Category Filters -->
+        <section class="d-flex justify-content-center gap-2 mb-4 flex-wrap" id="categoryFilterContainer">
+            <button class="btn category-filter-btn active" data-category="Всі">Всі позиції</button>
+            <button class="btn category-filter-btn" data-category="Кава">Кава</button>
+            <button class="btn category-filter-btn" data-category="Десерти">Десерти</button>
+        </section>
+
+        <!-- Dynamic Product Catalog Grid -->
+        <section class="row g-4" id="productsGrid">
+            <div class="col-12 text-center py-5">
+                <div class="spinner-border text-secondary" role="status">
+                    <span class="visually-hidden">Завантаження...</span>
+                </div>
+                <p class="text-muted mt-2">Завантажуємо свіже меню кав'ярні...</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Product Customization Modal -->
+    <div class="modal fade" id="customizeModal" tabindex="-1" aria-labelledby="customizeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" id="customizeModalLabel">
+                        <i class="bi bi-sliders me-2"></i>Налаштування напою
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрити"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="d-flex align-items-center gap-3 mb-3 pb-3 border-bottom">
+                        <img id="customItemImage" src="" alt="" style="width: 70px; height: 70px; object-fit: cover; border-radius: 0.75rem;">
+                        <div>
+                            <h5 class="fw-bold mb-1" id="customItemName">Назва</h5>
+                            <span class="text-muted small" id="customBasePrice">Базова ціна: 0 грн</span>
+                        </div>
+                    </div>
+
+                    <!-- Size Selection -->
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-uppercase text-muted">Розмір порції</label>
+                        <div class="custom-chip-group">
+                            <input type="radio" name="itemSize" id="sizeM" value="M" data-cost="0" checked>
+                            <label for="sizeM">Стандарт (M)</label>
+
+                            <input type="radio" name="itemSize" id="sizeL" value="L" data-cost="15">
+                            <label for="sizeL">Великий (L) +15 грн</label>
+                        </div>
+                    </div>
+
+                    <!-- Milk Option -->
+                    <div class="mb-3" id="milkOptionBlock">
+                        <label class="form-label small fw-bold text-uppercase text-muted">Тип молока</label>
+                        <div class="custom-chip-group">
+                            <input type="radio" name="milkType" id="milkRegular" value="Звичайне" data-cost="0" checked>
+                            <label for="milkRegular">Класичне</label>
+
+                            <input type="radio" name="milkType" id="milkLactoseFree" value="Безлактозне" data-cost="15">
+                            <label for="milkLactoseFree">Безлактозне +15 грн</label>
+
+                            <input type="radio" name="milkType" id="milkOat" value="Вівсяне" data-cost="20">
+                            <label for="milkOat">Вівсяне +20 грн</label>
+
+                            <input type="radio" name="milkType" id="milkAlmond" value="Мигдальне" data-cost="20">
+                            <label for="milkAlmond">Мигдальне +20 грн</label>
+                        </div>
+                    </div>
+
+                    <!-- Syrup Option -->
+                    <div class="mb-4" id="syrupOptionBlock">
+                        <label class="form-label small fw-bold text-uppercase text-muted">Додати сироп</label>
+                        <div class="custom-chip-group">
+                            <input type="radio" name="syrupType" id="syrupNone" value="Без сиропу" data-cost="0" checked>
+                            <label for="syrupNone">Без сиропу</label>
+
+                            <input type="radio" name="syrupType" id="syrupCaramel" value="Солона карамель" data-cost="10">
+                            <label for="syrupCaramel">Карамель +10 грн</label>
+
+                            <input type="radio" name="syrupType" id="syrupVanilla" value="Ваніль" data-cost="10">
+                            <label for="syrupVanilla">Ваніль +10 грн</label>
+                        </div>
+                    </div>
+
+                    <!-- Live Calculated Price & Add Action -->
+                    <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                        <div>
+                            <span class="small text-muted d-block">Вартість позиції:</span>
+                            <span class="fs-4 fw-bold text-success" id="customCalculatedPrice">0.00 грн</span>
+                        </div>
+                        <button class="btn btn-primary-coffee px-4 py-2" id="confirmCustomAddBtn">
+                            <i class="bi bi-plus-lg me-1"></i> Додати
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shopping Cart Modal -->
+    <div class="modal fade" id="cartModal" tabindex="-1" aria-labelledby="cartModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" id="cartModalLabel">
+                        <i class="bi bi-cart3 me-2"></i>Ваше замовлення
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрити"></button>
+                </div>
+
+                <div class="modal-body p-4">
+                    <!-- State 1: Empty Cart -->
+                    <div id="cartEmptyMessage" class="text-center py-4">
+                        <i class="bi bi-cart-x fs-1 text-muted"></i>
+                        <p class="mt-2 text-muted">Ваш кошик наразі порожній. Оберіть позиції з меню.</p>
+                    </div>
+
+                    <!-- State 2: Cart Items & Form -->
+                    <div id="cartContentWrapper" class="d-none">
+                        <div class="table-responsive mb-3">
+                            <table class="table table-borderless align-middle">
+                                <thead class="border-bottom">
+                                    <tr class="text-muted small">
+                                        <th>Найменування</th>
+                                        <th class="text-center">Кількість</th>
+                                        <th class="text-end">Ціна</th>
+                                        <th class="text-end">Дія</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="cartTableBody"></tbody>
+                            </table>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center border-top pt-3 mb-4">
+                            <span class="fs-5 fw-bold">До сплати:</span>
+                            <span class="fs-4 fw-bold text-success" id="cartTotalSum">0.00 грн</span>
+                        </div>
+
+                        <!-- Checkout Form -->
+                        <form id="checkoutForm" novalidate>
+                            <h6 class="fw-bold mb-3">
+                                <i class="bi bi-person-badge me-2"></i>Дані клієнта для самовивозу
+                            </h6>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-semibold">Ваше ім'я *</label>
+                                    <input type="text" class="form-control" id="customerName" placeholder="Олександр" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-semibold">Номер телефону *</label>
+                                    <input type="tel" class="form-control" id="customerPhone" placeholder="+380671234567" required>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label small fw-semibold">Бажаний час готовності *</label>
+                                    <input type="text" class="form-control" id="pickupTime" placeholder="Наприклад, через 15 хв або о 14:30" required>
+                                </div>
+                            </div>
+
+                            <div id="orderErrorAlert" class="alert alert-danger mt-3 d-none" role="alert"></div>
+
+                            <div class="d-grid mt-4">
+                                <button type="submit" class="btn btn-primary-coffee py-2" id="submitOrderBtn">
+                                    <span class="spinner-border spinner-border-sm d-none me-2" id="submitSpinner" role="status"></span>
+                                    Підтвердити замовлення
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- State 3: Success Screen -->
+                    <div id="orderSuccessWrapper" class="order-success-banner text-center d-none">
+                        <i class="bi bi-check-circle-fill text-success fs-1"></i>
+                        <h4 class="fw-bold mt-2">Замовлення успішно прийнято!</h4>
+                        <p class="text-muted mb-2">Ідентифікатор у системі: <strong id="successOrderId" class="text-dark">#0</strong></p>
+                        <p class="small text-muted">Бариста вже сповіщений і підготує свіжу каву у зазначений час.</p>
+                        <button class="btn btn-outline-success btn-sm mt-2" data-bs-dismiss="modal" id="closeSuccessBtn">
+                            Закрити вікно
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page Footer -->
+    <footer class="bg-white border-top py-3 mt-auto">
+        <div class="container text-center text-muted small">
+            &copy; 2026 CoffeeExpress. Індивідуальний проєкт у межах дисципліни «Технологічна практика».
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JavaScript Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Client Application Logic -->
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
